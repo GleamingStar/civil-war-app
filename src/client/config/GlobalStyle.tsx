@@ -1,5 +1,5 @@
 import reset from 'styled-reset';
-import {createGlobalStyle} from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
 ${reset};
@@ -9,6 +9,7 @@ ${reset};
 body {
   display: flex;
   justify-content: center;
+  background-color:#000;
 }
 a {
   color: inherit;
