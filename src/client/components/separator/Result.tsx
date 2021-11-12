@@ -84,7 +84,7 @@ const Player = () => {
     <PlayerWrapper>
       <PlayerName>가나다</PlayerName>
       <PlayerInfo>
-        <PlayerTier src={require(`client/images/CHALLENGER.png`).default} />
+        <PlayerTier src="assets/GOLD.png" />
         &nbsp;- II - 89
       </PlayerInfo>
     </PlayerWrapper>
