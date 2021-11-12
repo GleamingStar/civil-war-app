@@ -8,7 +8,7 @@ module.exports = {
   entry: ['./src/client/index.tsx', 'webpack-hot-middleware/client?path=/__reload&timeout=2000'],
   output: {
     filename: 'app.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: __dirname,
     publicPath: '/',
   },
   resolve: {
