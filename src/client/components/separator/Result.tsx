@@ -1,3 +1,6 @@
+import { playersAtom } from 'client/config/atom';
+import { useRecoilValue } from 'recoil';
+import { TPlayer } from 'shared/types';
 import styled from 'styled-components';
 
 const TeamWrapper = styled.ul<{ teamColor: 'BLUE' | 'RED' }>`
@@ -34,32 +37,13 @@ const PlayerTier = styled.img`
 `;
 
 const Result = () => {
-  const mockPlayers = [];
+  const players = useRecoilValue(playersAtom);
   return (
     <>
-      <Team color="BLUE" players={mockPlayers} />
-      <Team color="RED" players={mockPlayers} />
+      <Team color="BLUE" players={players.slice(0, 5)} />
+      <Team color="RED" players={players.slice(5)} />
     </>
   );
-};
-
-enum ETier {
-  unranked = 'UNRANKED',
-  bronze = 'BRONZE',
-  silver = 'SILVER',
-  gold = 'GOLD',
-  platinum = 'PLATINUM',
-  diamond = 'DIAMOND',
-  master = 'MASTER',
-  grandmaster = 'GRANDMASTER',
-  challenger = 'CHALLENGER',
-}
-
-type TPlayer = {
-  name: string;
-  tier: ETier;
-  rank: 'I' | 'II' | 'III' | 'IV';
-  leaguepoints: number;
 };
 
 type TTeam = {
@@ -67,25 +51,22 @@ type TTeam = {
   players: Array<TPlayer>;
 };
 
-const Team = ({ color, players }: TTeam) => {
-  return (
-    <TeamWrapper teamColor={color}>
-      <Player />
-      <Player />
-      <Player />
-      <Player />
-      <Player />
-    </TeamWrapper>
-  );
-};
+const Team = ({ color, players }: TTeam) => (
+  <TeamWrapper teamColor={color}>
+    {players.map((player) => (
+      <Player key={player.name} info={player} />
+    ))}
+  </TeamWrapper>
+);
 
-const Player = () => {
+const Player = ({ info }: { info: TPlayer }) => {
+  const { name, tier, rank, leaguePoints } = info;
   return (
     <PlayerWrapper>
-      <PlayerName>가나다</PlayerName>
+      <PlayerName>{name}</PlayerName>
       <PlayerInfo>
-        <PlayerTier src="assets/GOLD.png" />
-        &nbsp;- II - 89
+        <PlayerTier src={`assets/${tier}.png`} />
+        &nbsp;{`- ${rank} - ${leaguePoints}`}
       </PlayerInfo>
     </PlayerWrapper>
   );

@@ -1,5 +1,9 @@
-import { ChangeEvent, useState } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
+import { ChangeEvent } from 'react';
+import { useRecoilState } from 'recoil';
+import { entryAtom, playersAtom } from 'client/config/atom';
+import { TEntry, TPlayer } from 'shared/types';
 
 const ControllerWrapper = styled.div`
   position: relative;
@@ -29,32 +33,53 @@ const ConfirmButton = styled.button`
   color: #fff;
 `;
 
-type TPlayer = {
-  id: number;
-  value: string;
+const getRandomOrder = (length: number): Array<number> => {
+  const order: Set<number> = new Set();
+  while (order.size < length) order.add(Math.floor(Math.random() * length));
+  return [...order];
 };
 
 const Controller = () => {
-  const defaultPlayer: Array<TPlayer> =
-    JSON.parse(window.localStorage.getItem('player')) || Array.from({ length: 10 }, (_, id) => ({ id, value: '' }));
-
-  const [player, setPlayer] = useState(defaultPlayer);
+  const [entry, setEntry] = useRecoilState(entryAtom);
+  const [_, setPlayers] = useRecoilState(playersAtom);
 
   const inputChangeHandler = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = target;
     const id = +name;
 
-    setPlayer((player) => [...player.slice(0, id), { id, value }, ...player.slice(id + 1, player.length)]);
+    setEntry((player) => [...player.slice(0, id), { id, value }, ...player.slice(id + 1, player.length)]);
   };
 
-  const playerInput = ({ id, value }: TPlayer) => (
+  const playerInput = ({ id, value }: TEntry) => (
     <input key={id} name={id.toString()} value={value} onChange={inputChangeHandler} />
   );
 
+  const clickHandler = async () => {
+    localStorage.setItem('entry', JSON.stringify(entry));
+
+    const getInfo = (i: number) =>
+      new Promise(async (res, rej) => {
+        try {
+          const { data } = await axios.get(encodeURI(`/player/${entry[i].value}`));
+          res(data);
+        } catch (error) {
+          rej(error);
+        }
+      });
+
+    const promiseArr = getRandomOrder(10).map(getInfo);
+
+    try {
+      setPlayers((await Promise.all(promiseArr)) as Array<TPlayer>);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <ControllerWrapper>
-      <InputWrapper>{player.map(playerInput)}</InputWrapper>
-      <ConfirmButton>시작</ConfirmButton>
+      <InputWrapper>{entry.map(playerInput)}</InputWrapper>
+      <ConfirmButton onClick={clickHandler}>시작</ConfirmButton>
     </ControllerWrapper>
   );
 };

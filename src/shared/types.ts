@@ -32,3 +32,8 @@ export type TPlayer = {
   rank: 'I' | 'II' | 'III' | 'IV';
   leaguePoints: number;
 };
+
+export type TEntry = {
+  id: number;
+  value: string;
+};
