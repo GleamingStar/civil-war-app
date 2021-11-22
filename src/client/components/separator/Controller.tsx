@@ -1,9 +1,8 @@
-import axios from 'axios';
 import styled from 'styled-components';
 import { ChangeEvent } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { entryAtom, playersAtom } from 'client/config/atom';
-import { TEntry, TPlayer } from 'shared/types';
+import { TEntry } from 'shared/types';
 
 const ControllerWrapper = styled.div`
   position: relative;
@@ -27,6 +26,8 @@ const InputWrapper = styled.div`
 `;
 const ConfirmButton = styled.button`
   position: absolute;
+  width: 43px;
+  height: 25px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #555;
@@ -41,7 +42,7 @@ const getRandomOrder = (length: number): Array<number> => {
 
 const Controller = () => {
   const [entry, setEntry] = useRecoilState(entryAtom);
-  const [_, setPlayers] = useRecoilState(playersAtom);
+  const setPlayers = useSetRecoilState(playersAtom);
 
   const inputChangeHandler = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = target;
@@ -56,24 +57,7 @@ const Controller = () => {
 
   const clickHandler = async () => {
     localStorage.setItem('entry', JSON.stringify(entry));
-
-    const getInfo = (i: number) =>
-      new Promise(async (res, rej) => {
-        try {
-          const { data } = await axios.get(encodeURI(`/player/${entry[i].value}`));
-          res(data);
-        } catch (error) {
-          rej(error);
-        }
-      });
-
-    const promiseArr = getRandomOrder(10).map(getInfo);
-
-    try {
-      setPlayers((await Promise.all(promiseArr)) as Array<TPlayer>);
-    } catch (error) {
-      console.log(error);
-    }
+    setPlayers(getRandomOrder(10).map((i) => entry[i]));
   };
 
   return (

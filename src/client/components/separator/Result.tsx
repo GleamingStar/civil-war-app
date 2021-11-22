@@ -1,6 +1,8 @@
-import { playersAtom } from 'client/config/atom';
+import { infoSelector, playersAtom } from 'client/config/atom';
+import { Suspense } from 'react';
+import { PulseLoader } from 'react-spinners';
 import { useRecoilValue } from 'recoil';
-import { TPlayer } from 'shared/types';
+import { TEntry } from 'shared/types';
 import styled from 'styled-components';
 
 const TeamWrapper = styled.ul<{ teamColor: 'BLUE' | 'RED' }>`
@@ -16,6 +18,18 @@ const TeamWrapper = styled.ul<{ teamColor: 'BLUE' | 'RED' }>`
       margin-top: 19px;
     }
   }
+  div:nth-child(4) {
+    margin-top: 19px;
+  }
+`;
+const LoaderWrapper = styled.div`
+  position: relative;
+  padding: 6px;
+  width: 200px;
+  height: 66px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 const PlayerWrapper = styled.li`
   position: relative;
@@ -48,19 +62,21 @@ const Result = () => {
 
 type TTeam = {
   color: 'RED' | 'BLUE';
-  players: Array<TPlayer>;
+  players: Array<TEntry>;
 };
 
 const Team = ({ color, players }: TTeam) => (
   <TeamWrapper teamColor={color}>
     {players.map((player) => (
-      <Player key={player.name} info={player} />
+      <Suspense key={player.id} fallback={<Loader />}>
+        <Player key={player.id} id={player.value} />
+      </Suspense>
     ))}
   </TeamWrapper>
 );
 
-const Player = ({ info }: { info: TPlayer }) => {
-  const { name, tier, rank, leaguePoints } = info;
+const Player = ({ id }: { id: string }) => {
+  const { name, tier, rank, leaguePoints } = useRecoilValue(infoSelector(id));
   return (
     <PlayerWrapper>
       <PlayerName>{name}</PlayerName>
@@ -71,5 +87,11 @@ const Player = ({ info }: { info: TPlayer }) => {
     </PlayerWrapper>
   );
 };
+
+const Loader = () => (
+  <LoaderWrapper>
+    <PulseLoader size={12} margin={4} color="#888" />
+  </LoaderWrapper>
+);
 
 export default Result;

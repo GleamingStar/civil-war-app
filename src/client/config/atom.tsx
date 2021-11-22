@@ -1,4 +1,5 @@
-import { atom } from 'recoil';
+import axios from 'axios';
+import { atom, selector, selectorFamily } from 'recoil';
 import { TEntry, TPlayer } from 'shared/types';
 
 const defaultPlayer: Array<TEntry> =
@@ -9,7 +10,19 @@ export const entryAtom = atom<Array<TEntry>>({
   default: defaultPlayer,
 });
 
-export const playersAtom = atom<Array<TPlayer>>({
+export const playersAtom = atom<Array<TEntry>>({
   key: 'players',
   default: [],
+});
+
+export const infoSelector = selectorFamily<TPlayer, string>({
+  key: 'result',
+  get: (userID) => async () => {
+    try {
+      const { data } = await axios.get(encodeURI(`/player/${userID}`));
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
 });
