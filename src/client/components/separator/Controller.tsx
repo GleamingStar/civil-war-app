@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { ChangeEvent } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { entryAtom, playersAtom } from 'client/config/atom';
+import { emptyEntryAtom, entryAtom, playersAtom } from 'client/config/atom';
 import { TEntry } from 'shared/types';
 
 const ControllerWrapper = styled.div`
@@ -17,11 +17,15 @@ const InputWrapper = styled.div`
   flex-wrap: wrap;
   justify-content: space-evenly;
   align-items: center;
-  input {
-    background-color: #333;
-    width: 95px;
-    margin-bottom: 18px;
-    color: #fff;
+`;
+const EntryInput = styled.input<{ empty: boolean }>`
+  background-color: ${({ empty }) => (empty ? '#afafaf' : '#333')};
+  width: 95px;
+  margin-bottom: 18px;
+  color: #fff;
+  ::placeholder {
+    text-align: center;
+    font-size: 10px;
   }
 `;
 const ConfirmButton = styled.button`
@@ -43,6 +47,7 @@ const getRandomOrder = (length: number): Array<number> => {
 const Controller = () => {
   const [entry, setEntry] = useRecoilState(entryAtom);
   const setPlayers = useSetRecoilState(playersAtom);
+  const [emptyEntry, setEmptyEntry] = useRecoilState(emptyEntryAtom);
 
   const inputChangeHandler = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = target;
@@ -51,13 +56,35 @@ const Controller = () => {
     setEntry((player) => [...player.slice(0, id), { id, value }, ...player.slice(id + 1, player.length)]);
   };
 
-  const playerInput = ({ id, value }: TEntry) => (
-    <input key={id} name={id.toString()} value={value} onChange={inputChangeHandler} />
-  );
+  const isEntryEmpty = () => {
+    setEmptyEntry([]);
+    const emptyEntry = entry.filter(({ value }) => value === '').map(({ id }) => id);
+    if (emptyEntry.length === 0) return false;
+    setEmptyEntry(emptyEntry);
+    console.log('isEntryempty', emptyEntry);
+    return true;
+  };
 
-  const clickHandler = async () => {
+  const clickHandler = () => {
+    if (isEntryEmpty()) return;
+
     localStorage.setItem('entry', JSON.stringify(entry));
     setPlayers(getRandomOrder(10).map((i) => entry[i]));
+  };
+
+  const playerInput = ({ id, value }: TEntry) => {
+    const isEmpty = emptyEntry.findIndex((e) => e === id) !== -1;
+    return (
+      <EntryInput
+        autoComplete={'off'}
+        key={id}
+        empty={isEmpty}
+        placeholder={isEmpty ? '빈칸을 채워주세요' : ''}
+        name={id.toString()}
+        value={value}
+        onChange={inputChangeHandler}
+      />
+    );
   };
 
   return (

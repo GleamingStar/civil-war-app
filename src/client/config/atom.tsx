@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { atom, selector, selectorFamily } from 'recoil';
+import { atom, selectorFamily } from 'recoil';
 import { TEntry, TPlayer } from 'shared/types';
 
 const defaultPlayer: Array<TEntry> =
@@ -26,3 +26,9 @@ export const infoSelector = selectorFamily<TPlayer, string>({
     }
   },
 });
+
+export const emptyEntryAtom = atom<Array<number>>({
+  key: 'emptyEntry',
+  default: [],
+});
+
