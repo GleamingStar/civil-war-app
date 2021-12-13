@@ -7,7 +7,7 @@ module.exports = () => {
   dotenv.config();
 
   return {
-    mode: 'development',
+    mode: process.env.NODE_ENV,
     target: 'node',
     node: {
       __dirname: false,

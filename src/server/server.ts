@@ -9,12 +9,12 @@ const PORT = 8080;
 
 const app = express();
 
-const config = require('../../webpack.client');
-
-const compiler = webpack(config);
-
-app.use(devMiddleware(compiler, { publicPath: config.output.publicPath }));
-app.use(hotMiddleware(compiler, { path: '/__reload' }));
+if (process.env.NODE_ENV === 'development') {
+  const config = require('../../webpack.client.dev');
+  const compiler = webpack(config);
+  app.use(devMiddleware(compiler, { publicPath: config.output.publicPath }));
+  app.use(hotMiddleware(compiler, { path: '/__reload' }));
+}
 app.use(express.json());
 app.use('/assets', express.static(path.join(__dirname, '../assets')));
 app.use(express.static(path.join(__dirname, '../dist')));
