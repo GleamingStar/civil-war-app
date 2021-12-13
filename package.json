@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "team separator for LOL civil war",
   "scripts": {
-    "start": "webpack --config ./webpack.server.js && node dist/server.js",
+    "start": "webpack --mode development --config ./webpack.server.js && node dist/server.js",
+    "build": "webpack --mode production --config ./webpack.server.js && webpack --config ./webpack.client.prod.js && node dist/server.js",
     "tsc": "tsc --noEmit"
   },
   "author": "GleamingStar (tjdduddl10@gmail.com)",
@@ -17,12 +18,12 @@
     "@babel/preset-typescript": "^7.14.5",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.1",
     "@types/express": "^4.17.13",
-    "@types/express-session": "^1.17.4",
     "@types/node": "^16.6.2",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
     "@types/styled-components": "^5.1.9",
     "babel-loader": "^8.2.2",
+    "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.2",
     "react-refresh": "^0.10.0",
     "webpack": "^5.45.1",
@@ -32,11 +33,14 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "express-session": "^1.17.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
+    "react-spinners": "^0.11.0",
+    "recoil": "^0.5.2",
     "styled-components": "^5.3.0",
     "styled-reset": "^4.3.4",
     "typescript": "^4.3.5"

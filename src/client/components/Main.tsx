@@ -1,9 +1,9 @@
-import styled from 'styled-components';
+import Separator from './separator/Separator';
 
-const MainWrapper = styled.div``;
-
-const Main = () => {
-  return <MainWrapper></MainWrapper>;
-};
+const Main = () => (
+  <>
+    <Separator />
+  </>
+);
 
 export default Main;
