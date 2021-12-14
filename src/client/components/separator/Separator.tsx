@@ -5,10 +5,17 @@ import Result from './Result';
 const SeparatorWrapper = styled.div`
   position: relative;
   margin-top: 120px;
-  width: 986px;
+  width: 360px;
   height: 581px;
-  background-image: url('assets/background.png');
-
+  background-image: url('assets/background_mobile.png');
+  @media screen and (min-width: 786px) {
+    width: 782px;
+    background-image: url('assets/background_tablet.png');
+  }
+  @media screen and (min-width: 1024px) {
+    width: 986px;
+    background-image: url('assets/background_desktop.png');
+  }
   display: flex;
   justify-content: center;
   align-items: center;
