@@ -12,6 +12,7 @@ const ControllerWrapper = styled.div`
   @media screen and (min-width: 786px) {
     opacity: 1;
   }
+  z-index: 1;
 `;
 const InputWrapper = styled.div`
   height: 220px;
