@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { VscGithub } from 'react-icons/vsc';
+import { useSetRecoilState } from 'recoil';
+import { filterIndexAtom, locationFilter } from 'client/config/atom';
 
 const HeaderWrapper = styled.div`
   width: 360px;
@@ -42,13 +44,15 @@ const Header = () => (
 );
 
 const LocationSelect = () => {
+  const setFilterIndex = useSetRecoilState(filterIndexAtom);
+
   return (
-    <LocationWrapper>
-      <option>KR</option>
-      <option>JP</option>
-      <option>NA</option>
-      <option>EUW</option>
-      <option>EUNE</option>
+    <LocationWrapper onChange={({ target }) => setFilterIndex(+target.value)}>
+      {locationFilter.map(({ id, name }) => (
+        <option key={id} value={id}>
+          {name}
+        </option>
+      ))}
     </LocationWrapper>
   );
 };
