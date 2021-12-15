@@ -6,9 +6,13 @@ import { TEntry } from 'shared/types';
 
 const ControllerWrapper = styled.div`
   position: relative;
-  top: -20px;
   width: 220px;
   height: 280px;
+  opacity: 0.65;
+  @media screen and (min-width: 786px) {
+    opacity: 1;
+  }
+  z-index: 1;
 `;
 const InputWrapper = styled.div`
   height: 220px;

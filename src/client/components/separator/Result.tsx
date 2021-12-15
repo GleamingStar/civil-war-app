@@ -8,7 +8,13 @@ import styled from 'styled-components';
 const TeamWrapper = styled.ul<{ teamColor: 'BLUE' | 'RED' }>`
   position: absolute;
   top: 121px;
-  left: ${({ teamColor }) => (teamColor === 'BLUE' ? '129px' : '665px')};
+  left: ${({ teamColor }) => (teamColor === 'BLUE' ? '9px' : '190px')};
+  @media screen and (min-width: 786px) {
+    left: ${({ teamColor }) => (teamColor === 'BLUE' ? '25px' : '565px')};
+  }
+  @media screen and (min-width: 1024px) {
+    left: ${({ teamColor }) => (teamColor === 'BLUE' ? '129px' : '665px')};
+  }
   li {
     display: flex;
     flex-direction: column;
@@ -25,7 +31,10 @@ const TeamWrapper = styled.ul<{ teamColor: 'BLUE' | 'RED' }>`
 const LoaderWrapper = styled.div`
   position: relative;
   padding: 6px;
-  width: 196px;
+  width: 160px;
+  @media screen and (min-width: 786px) {
+    width: 196px;
+  }
   height: 66px;
   display: flex;
   justify-content: center;
@@ -34,7 +43,10 @@ const LoaderWrapper = styled.div`
 const PlayerWrapper = styled.li`
   position: relative;
   padding: 6px;
-  width: 196px;
+  width: 160px;
+  @media screen and (min-width: 786px) {
+    width: 196px;
+  }
   height: 66px;
   color: #fff;
   overflow: hidden;

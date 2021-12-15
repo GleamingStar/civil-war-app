@@ -21,31 +21,31 @@ const infoParser = (name: string, data: Array<TLeagueInfo>): TPlayer => {
   return { name: summonerName, tier, rank, leaguePoints };
 };
 
-router.get('/:player_id', async (req, res) => {
-  const { player_id } = req.params;
+router.get('/', async (req, res) => {
+  const { location,id } = req.query;
 
-  let id;
+  let riotId;
 
   try {
-    const URL = `https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/${player_id}?api_key=${process.env.RIOT_API_KEY}`;
+    const URL = `https://${location}.api.riotgames.com/lol/summoner/v4/summoners/by-name/${id}?api_key=${process.env.RIOT_API_KEY}`;
     const { data } = await axios.get(encodeURI(URL));
 
-    id = data.id;
+    riotId = data.id;
   } catch ({ response }) {
     const { status, message } = response;
 
     if (status === 403) res.status(403).send({ message: 'Unavailable API KEY' });
-    else if (status === 404) res.send(defaultInfo(player_id));
+    else if (status === 404) res.send(defaultInfo(id as string));
     else res.status(status).send(message);
 
     return;
   }
 
   try {
-    const URL = `https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/${id}?api_key=${process.env.RIOT_API_KEY}`;
+    const URL = `https://${location}.api.riotgames.com/lol/league/v4/entries/by-summoner/${riotId}?api_key=${process.env.RIOT_API_KEY}`;
     const { data } = await axios.get(URL);
 
-    res.send(infoParser(player_id, data));
+    res.send(infoParser(id as string, data));
   } catch ({ response }) {
     const { status, message } = response;
 
