@@ -20,7 +20,7 @@ export const locationFilter = [
   { id: 1, name: 'JP', value: 'jp1' },
   { id: 2, name: 'NA', value: 'na1' },
   { id: 3, name: 'EUW', value: 'euw1' },
-  { id: 4, name: 'EUNE', value: 'ewne1' },
+  { id: 4, name: 'EUN', value: 'ewn1' },
 ];
 
 export const filterIndexAtom = atom<number>({
