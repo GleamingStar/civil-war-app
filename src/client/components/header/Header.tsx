@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { VscGithub } from 'react-icons/vsc';
 import { useSetRecoilState } from 'recoil';
 import { filterIndexAtom, locationFilter } from 'client/config/atom';
+import { Link } from 'toy-react-router';
 
 const HeaderWrapper = styled.div`
   width: 360px;
@@ -33,8 +34,8 @@ const LocationWrapper = styled.select``;
 const Header = () => (
   <HeaderWrapper>
     <MenuWrapper>
-      <div>메인</div>
-      <div>기록실</div>
+      <Link to="/">메인</Link>
+      <Link to="/record">전적</Link>
     </MenuWrapper>
     <MenuWrapper>
       <LocationSelect />
