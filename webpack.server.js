@@ -37,6 +37,9 @@ module.exports = () => {
     plugins: [
       new webpack.EnvironmentPlugin({
         RIOT_API_KEY: process.env.RIOT_API_KEY,
+        DATABASE_IP: process.env.DATABASE_IP,
+        DATABASE_USER: process.env.DATABASE_USER,
+        DATABASE_PASSWORD: process.env.DATABASE_PASSWORD,
       }),
     ],
   };

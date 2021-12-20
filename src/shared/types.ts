@@ -37,3 +37,11 @@ export type TEntry = {
   id: number;
   value: string;
 };
+
+export type TStat = {
+  id: string;
+  win?: number;
+  lose?: number;
+  rating: number;
+  newbie?: boolean;
+};
