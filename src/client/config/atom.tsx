@@ -2,12 +2,12 @@ import axios from 'axios';
 import { atom, selector, selectorFamily } from 'recoil';
 import { TEntry, TPlayer, TRecord } from 'shared/types';
 
-const defaultPlayer: Array<TEntry> =
+const defaultEntry: Array<TEntry> =
   JSON.parse(window.localStorage.getItem('entry')) || Array.from({ length: 10 }, (_, id) => ({ id, value: '' }));
 
 export const entryAtom = atom<Array<TEntry>>({
   key: 'entry',
-  default: defaultPlayer,
+  default: defaultEntry,
 });
 
 export const playersAtom = atom<Array<TEntry>>({
@@ -26,6 +26,11 @@ export const locationFilter = [
 export const filterIndexAtom = atom<number>({
   key: 'filterIndex',
   default: 0,
+});
+
+export const currentFilterSelector = selector({
+  key: 'currentFilter',
+  get: ({ get }) => locationFilter[get(filterIndexAtom)],
 });
 
 export const infoSelector = selectorFamily<TPlayer, string>({
@@ -82,4 +87,9 @@ export const sortedRecordSelector = selector<Array<TRecord>>({
 export const emptyEntryAtom = atom<Array<number>>({
   key: 'emptyEntry',
   default: [],
+});
+
+export const isPlayingAtom = atom<boolean>({
+  key: 'isPlaying',
+  default: false,
 });

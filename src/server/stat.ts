@@ -20,7 +20,7 @@ const getRating = (winRate: number): number => K * (1 - winRate);
 
 router.post('/', async (req, res) => {
   const { location } = req.query;
-  const { result }: { result: { win: Array<string>; lose: Array<string> } } = req.body;
+  const { win, lose }: { win: Array<string>; lose: Array<string> } = req.body;
 
   const connection = await mysql.createConnection(dbConfig);
 
@@ -35,14 +35,14 @@ router.post('/', async (req, res) => {
   };
 
   const winner: Array<TStat> = await Promise.all(
-    result.win.map(async (userId) => {
+    win.map(async (userId) => {
       const [rows] = await connection.query(query.select(userId));
       return !rows[0] ? defaultStat(userId) : { userId, ...rows[0] };
     })
   );
 
   const loser: Array<TStat> = await Promise.all(
-    result.lose.map(async (userId) => {
+    lose.map(async (userId) => {
       const [rows] = await connection.query(query.select(userId));
       return !rows[0] ? defaultStat(userId) : { userId, ...rows[0] };
     })
@@ -69,7 +69,7 @@ router.post('/', async (req, res) => {
     })
   );
 
-  res.status(200);
+  res.send({ message: 'OK' });
 });
 
 router.get(`/`, async (req, res) => {
