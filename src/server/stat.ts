@@ -24,23 +24,27 @@ router.post('/', async (req, res) => {
 
   const connection = await mysql.createConnection(dbConfig);
 
-  const insertQuery = (result: 'win' | 'lose', id: string, count: number, rating: number) =>
-    `INSERT INTO ${location} (userId, ${result}, rating) VALUES ('${id}', ${++count}, ${rating})`;
+  const defaultStat = (userId: string): TStat => ({ userId, win: 0, lose: 0, rating: 1000, newbie: true });
 
-  const updateQuery = (result: 'win' | 'lose', id: string, count: number, rating: number) =>
-    `UPDATE ${location} SET ${result}=${++count}, rating=${rating} WHERE userId='${id}'`;
+  const query = {
+    select: (userId: string) => `SELECT win,lose,rating FROM ${location} WHERE userID='${userId}'`,
+    insert: (result: 'win' | 'lose', userId: string, count: number, rating: number) =>
+      `INSERT INTO ${location} (userId, ${result}, rating) VALUES ('${userId}', ${++count}, ${rating})`,
+    update: (result: 'win' | 'lose', userId: string, count: number, rating: number) =>
+      `UPDATE ${location} SET ${result}=${++count}, rating=${rating} WHERE userId='${userId}'`,
+  };
 
   const winner: Array<TStat> = await Promise.all(
-    result.win.map(async (id) => {
-      const [rows] = await connection.query(`SELECT win,rating FROM ${location} WHERE userID='${id}'`);
-      return !rows[0] ? { id, win: 0, rating: 1000, newbie: true } : { id, ...rows[0] };
+    result.win.map(async (userId) => {
+      const [rows] = await connection.query(query.select(userId));
+      return !rows[0] ? defaultStat(userId) : { userId, ...rows[0] };
     })
   );
 
   const loser: Array<TStat> = await Promise.all(
-    result.lose.map(async (id) => {
-      const [rows] = await connection.query(`SELECT lose,rating FROM ${location} WHERE userID='${id}'`);
-      return !rows[0] ? { id, lose: 0, rating: 1000, newbie: true } : { id, ...rows[0] };
+    result.lose.map(async (userId) => {
+      const [rows] = await connection.query(query.select(userId));
+      return !rows[0] ? defaultStat(userId) : { userId, ...rows[0] };
     })
   );
 
@@ -50,18 +54,18 @@ router.post('/', async (req, res) => {
   const changedRating = getRating(getWinRate(winnerRating, loserRating));
 
   await Promise.all(
-    winner.map(async ({ id, win, rating, newbie }) => {
+    winner.map(async ({ userId, win, rating, newbie }) => {
       return newbie
-        ? await connection.query(insertQuery('win', id, win, rating + changedRating))
-        : await connection.query(updateQuery('win', id, win, rating + changedRating));
+        ? await connection.query(query.insert('win', userId, win, rating + changedRating))
+        : await connection.query(query.update('win', userId, win, rating + changedRating));
     })
   );
 
   await Promise.all(
-    loser.map(async ({ id, lose, rating, newbie }) => {
+    loser.map(async ({ userId, lose, rating, newbie }) => {
       return newbie
-        ? await connection.query(insertQuery('lose', id, lose, rating - changedRating))
-        : await connection.query(updateQuery('lose', id, lose, rating - changedRating));
+        ? await connection.query(query.insert('lose', userId, lose, rating - changedRating))
+        : await connection.query(query.update('lose', userId, lose, rating - changedRating));
     })
   );
 
