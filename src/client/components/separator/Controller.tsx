@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import axios from 'axios';
 import { ChangeEvent } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { currentFilterSelector, emptyEntryAtom, entryAtom, isPlayingAtom, playersAtom } from 'client/config/atom';
+import { useRecoilRefresher_UNSTABLE, useRecoilState, useRecoilValue } from 'recoil';
+import { currentFilterSelector, emptyEntryAtom, entryAtom, isPlayingAtom, playersAtom, recordSelector } from 'client/config/atom';
 import { TEntry } from 'shared/types';
 import { VscSync } from 'react-icons/vsc';
 
@@ -61,6 +61,7 @@ const Controller = () => {
   const location = useRecoilValue(currentFilterSelector);
   const [emptyEntry, setEmptyEntry] = useRecoilState(emptyEntryAtom);
   const [isPlaying, setPlaying] = useRecoilState(isPlayingAtom);
+  const refreshRecord = useRecoilRefresher_UNSTABLE(recordSelector)
 
   const inputChangeHandler = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = target;
@@ -94,6 +95,7 @@ const Controller = () => {
     setPlayers([]);
     try {
       await axios.post(`/stat?location=${location.value}`, { win, lose });
+      refreshRecord();
     } catch (error) {
       console.log(error);
     }
