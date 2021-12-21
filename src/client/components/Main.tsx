@@ -2,6 +2,8 @@ import Separator from './separator/Separator';
 import Header from './header/Header';
 import { Redirect, Route, Router, Switch } from 'toy-react-router';
 import Record from './record/Record';
+import { Suspense } from 'react';
+import { PulseLoader } from 'react-spinners';
 
 const Main = () => (
   <Router>
@@ -11,7 +13,9 @@ const Main = () => (
         <Separator />
       </Route>
       <Route path="/record" exact>
-        <Record />
+        <Suspense fallback={<PulseLoader />}>
+          <Record />
+        </Suspense>
       </Route>
       <Route>
         <Redirect to="/" />
