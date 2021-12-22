@@ -53,6 +53,7 @@ const PlayerWrapper = styled.li`
 `;
 const PlayerName = styled.div`
   font-size: 160%;
+  word-break: keep-all;
 `;
 const PlayerInfo = styled.div`
   display: flex;

@@ -15,6 +15,12 @@ const RecordWrapper = styled.div`
   td,
   th {
     padding: 10px;
+    word-break: keep-all;
+    @media screen and (max-width: 785px) {
+      white-space: nowrap;
+      max-width: 102px;
+      overflow: hidden;
+    }
   }
   th:nth-child(2) {
     min-width: 84px;
