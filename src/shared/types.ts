@@ -37,3 +37,15 @@ export type TEntry = {
   id: number;
   value: string;
 };
+
+export type TRecord = {
+  id: number;
+  userId: string;
+  win: number;
+  lose: number;
+  rating: number;
+};
+
+export type TStat = Omit<TRecord, 'id'> & {
+  newbie? : boolean;
+}

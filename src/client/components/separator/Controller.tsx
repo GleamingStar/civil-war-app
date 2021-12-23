@@ -1,8 +1,10 @@
 import styled from 'styled-components';
+import axios from 'axios';
 import { ChangeEvent } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { emptyEntryAtom, entryAtom, playersAtom } from 'client/config/atom';
+import { useRecoilRefresher_UNSTABLE, useRecoilState, useRecoilValue } from 'recoil';
+import { currentFilterSelector, emptyEntryAtom, entryAtom, isPlayingAtom, playersAtom, recordSelector } from 'client/config/atom';
 import { TEntry } from 'shared/types';
+import { VscSync } from 'react-icons/vsc';
 
 const ControllerWrapper = styled.div`
   position: relative;
@@ -32,14 +34,19 @@ const EntryInput = styled.input<{ empty: boolean }>`
     font-size: 10px;
   }
 `;
-const ConfirmButton = styled.button`
-  position: absolute;
-  width: 43px;
+const ButtonWrapper = styled.div<{ isPlaying: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: ${({ isPlaying }) => (isPlaying ? 'space-between' : 'center')};
+  padding: 0px 8px;
+`;
+const Button = styled.button`
   height: 25px;
-  left: 50%;
-  transform: translateX(-50%);
   background-color: #555;
   color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const getRandomOrder = (length: number): Array<number> => {
@@ -50,8 +57,11 @@ const getRandomOrder = (length: number): Array<number> => {
 
 const Controller = () => {
   const [entry, setEntry] = useRecoilState(entryAtom);
-  const setPlayers = useSetRecoilState(playersAtom);
+  const [players, setPlayers] = useRecoilState(playersAtom);
+  const location = useRecoilValue(currentFilterSelector);
   const [emptyEntry, setEmptyEntry] = useRecoilState(emptyEntryAtom);
+  const [isPlaying, setPlaying] = useRecoilState(isPlayingAtom);
+  const refreshRecord = useRecoilRefresher_UNSTABLE(recordSelector)
 
   const inputChangeHandler = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = target;
@@ -65,15 +75,30 @@ const Controller = () => {
     const emptyEntry = entry.filter(({ value }) => value === '').map(({ id }) => id);
     if (emptyEntry.length === 0) return false;
     setEmptyEntry(emptyEntry);
-    console.log('isEntryempty', emptyEntry);
     return true;
   };
 
-  const clickHandler = () => {
+  const clickConfirmHandler = () => {
     if (isEntryEmpty()) return;
 
     localStorage.setItem('entry', JSON.stringify(entry));
     setPlayers(getRandomOrder(10).map((i) => entry[i]));
+    setPlaying(true);
+  };
+
+  const clickWinHandler = async (color: 'BLUE' | 'RED') => {
+    const win =
+      color === 'BLUE' ? players.slice(0, 5).map(({ value }) => value) : players.slice(5, 10).map(({ value }) => value);
+    const lose =
+      color === 'BLUE' ? players.slice(5, 10).map(({ value }) => value) : players.slice(0, 5).map(({ value }) => value);
+    setPlaying(false);
+    setPlayers([]);
+    try {
+      await axios.post(`/stat?location=${location.value}`, { win, lose });
+      refreshRecord();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const playerInput = ({ id, value }: TEntry) => {
@@ -94,7 +119,11 @@ const Controller = () => {
   return (
     <ControllerWrapper>
       <InputWrapper>{entry.map(playerInput)}</InputWrapper>
-      <ConfirmButton onClick={clickHandler}>시작</ConfirmButton>
+      <ButtonWrapper isPlaying={isPlaying}>
+        {isPlaying && <Button onClick={() => clickWinHandler('BLUE')}>🔵 승리</Button>}
+        <Button onClick={clickConfirmHandler}>{isPlaying ? <VscSync color="#fff" size={16} /> : '시작'}</Button>
+        {isPlaying && <Button onClick={() => clickWinHandler('RED')}>승리 🔴</Button>}
+      </ButtonWrapper>
     </ControllerWrapper>
   );
 };
