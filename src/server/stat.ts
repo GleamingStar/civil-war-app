@@ -10,7 +10,7 @@ const dbConfig = {
   host: process.env.DATABASE_IP,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
-  database: 'stat',
+  database: 'stats',
 };
 
 const getWinRate = (friendlyRating: number, enemyRating: number): number =>
